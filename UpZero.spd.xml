@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE softpkg PUBLIC "-//JTRS//DTD SCA V2.2.2 SPD//EN" "softpkg.dtd">
+<softpkg id="DCE:928b24eb-f5df-4502-9245-6289c20d992b" name="UpZero" type="sca_compliant" version="1.0.0">
+  <title></title>
+  <author>
+    <name>null</name>
+  </author>
+  <description>Upsamples an incoming set of data by the upsample_factor.
+Inserts zeros between every sample of data coming in and outputs the data.</description>
+  <propertyfile type="PRF">
+    <localfile name="UpZero.prf.xml"/>
+  </propertyfile>
+  <descriptor>
+    <localfile name="UpZero.scd.xml"/>
+  </descriptor>
+  <implementation id="cpp">
+    <description>The implementation contains descriptive information about the template for a software component.</description>
+    <code type="Executable">
+      <localfile name="cpp/UpZero"/>
+      <entrypoint>cpp/UpZero</entrypoint>
+    </code>
+    <compiler name="/usr/bin/gcc" version="4.1.2"/>
+    <programminglanguage name="C++"/>
+    <humanlanguage name="EN"/>
+    <os name="Linux"/>
+    <processor name="x86"/>
+    <processor name="x86_64"/>
+  </implementation>
+</softpkg>
