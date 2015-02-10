@@ -173,13 +173,14 @@ int UpZero_i::serviceFunction()
 		if(upsample_factor == 0)
 		{
 			upsample_factor = 1;
-			cout << "WARNING - upsample_factor needs to be atleast 1" << endl;
+			LOG_WARN(UpZero_i, "WARNING - upsample_factor needs to be at least 1");
 		}
 		dataOut.clear(); //when upsample_factor changes, clear data
 		old_upsample_factor = upsample_factor; //caching off
 		updateSRI = true;
 	}
 
+	//If SRI data changes, pushes changes and clears output data
 	if(tmp->sriChanged || tmp->inputQueueFlushed || updateSRI)
 	{
 		tmp->SRI.xdelta = tmp->SRI.xdelta / (type)old_upsample_factor;
@@ -187,6 +188,8 @@ int UpZero_i::serviceFunction()
 		dataOut.clear(); //clear data when sri has changed
 	}
 
+	//Given complex data, upsample data by upsample_factor with addition of zeros into the data vector
+	//point ptrToData at the result
 	vector<type> *ptrToData;
 	if(tmp->SRI.mode)
 	{
@@ -195,6 +198,8 @@ int UpZero_i::serviceFunction()
 		addZeros(*intermediate, *temp);
 		ptrToData = &dataOut;
 	}
+	//Given real data, upsample data by upsample_factor with addition of zeros into the data vector
+	//point ptrToData at the result
 	else
 	{
 		addZeros((vector<type>&)tmp->dataBuffer, dataOut);

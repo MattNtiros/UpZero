@@ -88,7 +88,6 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
     #   ossie.utils.bluefile.bluefile_helpers
     # for modules that will assist with testing resource with BULKIO ports
     
-    
     def testComponent2(self):
         print "Testing UpZero functionality - 2"
         inputData = [float(x) for x in xrange(1000)]
@@ -135,6 +134,29 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
             for i in xrange(self.comp.upsample_factor-1):
                 self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
     
+    def testComponant(self):
+        for z in range(5,20):
+            inputData = [float(x) for x in xrange(1000)]
+            self.comp.upsample_factor = z
+            self.src.push(inputData)
+            print "Testing UpZero functionality - ", self.comp.upsample_factor
+            
+            outData = []
+            count = 0
+            while True:
+                outData = self.sink.getData()
+                if outData:
+                    break
+                if count == 100:
+                    break;
+                sleep(.01)
+                count+=1
+            
+            self.assertEqual(len(inputData)*self.comp.upsample_factor, len(outData))
+            for x in xrange(len(inputData)):
+                self.assertEqual(inputData[x], outData[x*self.comp.upsample_factor]);
+                for i in xrange(self.comp.upsample_factor-1):
+                    self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
     
     def testFilter(self):
         print "Testing Filter After Upsample"
