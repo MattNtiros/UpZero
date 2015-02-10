@@ -19,10 +19,10 @@ public:
 	int serviceFunction();
 
 private:
-	vector<type> dataOut;
-	vector<complex<type> > dataOut_complex;
-	unsigned long old_upsample_factor;
-	bool updateSRI;
+	vector<type> dataOut;	//stores real output data
+	vector<complex<type> > dataOut_complex;	//stores complex output data
+	unsigned long old_upsample_factor;	//stores previous iteration's upsample factor for purpose of checking if it has changed
+	bool updateSRI;	//stores whether or not SRI has changed since previous iteration
 
 
 	template<typename T>
