@@ -158,11 +158,6 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
                 for i in xrange(self.comp.upsample_factor-1):
                     self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
     
-    def testFilter(self):
-        print "Testing Filter After Upsample"
-        print "Has not been finished yet"
-    
-    
 
 if __name__ == "__main__":
     ossie.utils.testing.main("../UpZero.spd.xml") # By default tests all implementations
