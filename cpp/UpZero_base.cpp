@@ -65,7 +65,7 @@ void UpZero_base::loadProperties()
     addProperty(upsample_factor,
                 2,
                 "upsample_factor",
-                "",
+                "upsample_factor",
                 "readwrite",
                 "",
                 "external",

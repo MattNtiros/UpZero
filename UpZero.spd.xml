@@ -6,7 +6,7 @@
     <name>null</name>
   </author>
   <description>Upsamples an incoming set of data by the upsample_factor.
-Inserts zeros between every sample of data coming in and outputs the data.</description>
+Inserts zeros between every sample of data coming in and outputs the data. The process of upsampling will leave spectral copies at multiples of the original sample rate, which may require filtering to remove.</description>
   <propertyfile type="PRF">
     <localfile name="UpZero.prf.xml"/>
   </propertyfile>
