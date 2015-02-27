@@ -22,9 +22,7 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
         
         #starts sandbox
         sb.start()
-        
-        #variables
-    
+
     def tearDown(self):
         #######################################################################
         # Simulate regular resource shutdown
@@ -34,8 +32,6 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
         sb.reset()
         sb.stop()
         ossie.utils.testing.ScaComponentTestCase.tearDown(self);
-
-        
 
     def startComponent(self):
         #######################################################################
@@ -88,59 +84,14 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
     #   ossie.utils.bluefile.bluefile_helpers
     # for modules that will assist with testing resource with BULKIO ports
     
-    def testComponent2(self):
-        print "Testing UpZero functionality - 2"
-        inputData = [float(x) for x in xrange(1000)]
-        self.comp.upsample_factor = 2
-        self.src.push(inputData)
-        
-        outData = []
-        count = 0
-        while True:
-            outData = self.sink.getData()
-            if outData:
-                break
-            if count == 100:
-                break;
-            sleep(.01)
-            count+=1
-        
-        self.assertEqual(len(inputData)*self.comp.upsample_factor, len(outData))
-        for x in xrange(len(inputData)):
-            self.assertEqual(inputData[x], outData[x*self.comp.upsample_factor]);
-            for i in xrange(self.comp.upsample_factor-1):
-                self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
-                
-    def testComponent4(self):
-        print "Testing UpZero functionality - 4"
-        inputData = [float(x) for x in xrange(1000)]
-        self.comp.upsample_factor = 4
-        self.src.push(inputData)
-        
-        outData = []
-        count = 0
-        while True:
-            outData = self.sink.getData()
-            if outData:
-                break
-            if count == 100:
-                break;
-            sleep(.01)
-            count+=1
-        
-        self.assertEqual(len(inputData)*self.comp.upsample_factor, len(outData))
-        for x in xrange(len(inputData)):
-            self.assertEqual(inputData[x], outData[x*self.comp.upsample_factor]);
-            for i in xrange(self.comp.upsample_factor-1):
-                self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
     
-    def testComponant(self):
-        for z in range(5,20):
+    def testComponantReal(self):
+        for z in range(2,15):
             inputData = [float(x) for x in xrange(1000)]
             self.comp.upsample_factor = z
             self.src.push(inputData)
-            print "Testing UpZero functionality - ", self.comp.upsample_factor
-            
+            print "Testing UpZero Real functionality - ", self.comp.upsample_factor
+              
             outData = []
             count = 0
             while True:
@@ -151,13 +102,41 @@ class ResourceTests(ossie.utils.testing.ScaComponentTestCase):
                     break;
                 sleep(.01)
                 count+=1
-            
+              
             self.assertEqual(len(inputData)*self.comp.upsample_factor, len(outData))
             for x in xrange(len(inputData)):
                 self.assertEqual(inputData[x], outData[x*self.comp.upsample_factor]);
                 for i in xrange(self.comp.upsample_factor-1):
                     self.assertEqual(outData[(x*self.comp.upsample_factor)+(i+1)], 0)
-    
+                    
+    def testComponantComplex(self):
+        for z in range(2,15):
+            inputData = [complex(float(x+1), -float(x)) for x in xrange(1000)]
+            self.comp.upsample_factor = z
+            self.src.push(inputData)
+            print "Testing UpZero Complex functionality - ", self.comp.upsample_factor
+            
+            outData = []
+            outputData = []
+            count = 0
+            
+            while True:
+                outData = self.sink.getData()
+                if outData:
+                    break
+                if count == 100:
+                    break;
+                sleep(.01)
+                count+=1
+                
+            for i in range(len(outData)/2):
+                outputData.append(complex(outData[2*i], outData[2*i+1]))
+            
+            self.assertEqual(len(inputData)*self.comp.upsample_factor, len(outputData))
+            for x in xrange(len(inputData)):
+                self.assertEqual(inputData[x], outputData[x*self.comp.upsample_factor]);
+                for i in xrange(self.comp.upsample_factor-1):
+                    self.assertEqual(outputData[(x*self.comp.upsample_factor)+(i+1)], complex(0,0))
 
 if __name__ == "__main__":
     ossie.utils.testing.main("../UpZero.spd.xml") # By default tests all implementations

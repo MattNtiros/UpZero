@@ -1,22 +1,28 @@
-/**************************************************************************
-
-    This is the component code. This file contains the child class where
-    custom functionality can be added to the component. Custom
-    functionality to the base class can be extended here. Access to
-    the ports can also be done from this class
-
-**************************************************************************/
+/**
+* Copyright (C) 2013 Axios, Inc.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "UpZero.h"
 
 PREPARE_LOGGING(UpZero_i)
 
 UpZero_i::UpZero_i(const char *uuid, const char *label) :
-    UpZero_base(uuid, label)
-{
-	old_upsample_factor = upsample_factor;
-	updateSRI = true;
-}
+    UpZero_base(uuid, label),
+    old_upsample_factor(upsample_factor),
+    updateSRI(true) {}
 
 UpZero_i::~UpZero_i()
 {
@@ -160,7 +166,6 @@ UpZero_i::~UpZero_i()
 ************************************************************************************************/
 int UpZero_i::serviceFunction()
 {
-	LOG_DEBUG(UpZero_i, "serviceFunction() example log message");
 	bulkio::InFloatPort::dataTransfer *tmp = dataFloat_In->getPacket(bulkio::Const::BLOCKING);
 	if (not tmp) { // No data is available
 		return NOOP;
@@ -183,31 +188,29 @@ int UpZero_i::serviceFunction()
 	//If SRI data changes, pushes changes and clears output data
 	if(tmp->sriChanged || tmp->inputQueueFlushed || updateSRI)
 	{
-		tmp->SRI.xdelta = tmp->SRI.xdelta / (type)old_upsample_factor;
+		tmp->SRI.xdelta = tmp->SRI.xdelta / old_upsample_factor;
 		dataFloat_Out->pushSRI(tmp->SRI);
-		dataOut.clear(); //clear data when sri has changed
+		if(tmp->inputQueueFlushed)
+			LOG_WARN(UpZero_i, "WARNING - Input Queue Flushed");
 	}
 
 	//Given complex data, upsample data by upsample_factor with addition of zeros into the data vector
 	//point ptrToData at the result
-	vector<type> *ptrToData;
-	if(tmp->SRI.mode)
+	if(COMPLEX)
 	{
 		vector<complex<type> > *intermediate = (vector<complex<type> >*) &(tmp->dataBuffer);
 		vector<complex<type> > *temp = (vector<complex<type> >*)&dataOut;
 		addZeros(*intermediate, *temp);
-		ptrToData = &dataOut;
 	}
 	//Given real data, upsample data by upsample_factor with addition of zeros into the data vector
 	//point ptrToData at the result
 	else
 	{
 		addZeros((vector<type>&)tmp->dataBuffer, dataOut);
-		ptrToData = &dataOut;
 	}
 
 
-	dataFloat_Out->pushPacket(*ptrToData, tmp->T, tmp->EOS, tmp->streamID);
+	dataFloat_Out->pushPacket(dataOut, tmp->T, tmp->EOS, tmp->streamID);
 	delete tmp; // IMPORTANT: MUST RELEASE THE RECEIVED DATA BLOCK
 	return NORMAL;
 }
